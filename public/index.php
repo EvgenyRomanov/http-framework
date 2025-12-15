@@ -8,6 +8,7 @@ use Framework\Http\Message\ResponseFactory;
 use Framework\Http\Message\ServerRequestFactory;
 use Framework\Http\SapiStreamEmitter;
 
+/** @psalm-suppress MissingFile */
 require __DIR__ . '/../vendor/autoload.php';
 
 http_response_code(500);

@@ -23,25 +23,32 @@ final class ServerRequestFactory implements ServerRequestFactoryInterface
         mixed $input = null
     ): ServerRequestInterface {
         $server ??= $_SERVER;
+        /** @var array<string, array<string>> $headers */
         $headers = [
             'Content-Type' => [$server['CONTENT_TYPE']],
             'Content-Length' => [$server['CONTENT_LENGTH']],
         ];
 
+        /** @var array<string, string> $server */
         foreach ($server as $serverName => $serverValue) {
             if (str_starts_with($serverName, 'HTTP_')) {
                 $name = ucwords(strtolower(str_replace('_', '-', substr($serverName, 5))), '-');
                 /** @var string[] $values */
-                /** @psalm-suppress InvalidArgument */
-                /** @psalm-suppress PossiblyInvalidCast */
                 $values = preg_split('#\s*,\s*#', $serverValue);
                 $headers[$name] = $values;
             }
         }
 
+        if ($input) {
+            $streamResource= $input;
+        } else {
+            $streamResource = fopen('php://input', 'r');
+            if ($streamResource === false) {
+                throw new \RuntimeException('Unable to open input stream');
+            }
+        }
+
         /** @psalm-suppress RiskyTruthyFalsyComparison */
-        /** @psalm-suppress InvalidOperand */
-        /** @psalm-suppress PossiblyInvalidCast */
         return new ServerRequest(
             serverParams: $server,
             uri: (new UriFactory())->createUri(
@@ -51,7 +58,7 @@ final class ServerRequestFactory implements ServerRequestFactoryInterface
             queryParams: $query ?? $_GET,
             headers: $headers,
             cookieParams: $cookie ?? $_COOKIE,
-            body: (new StreamFactory())->createStreamFromResource($input ?: fopen('php://input', 'r')),
+            body: (new StreamFactory())->createStreamFromResource($streamResource),
             parsedBody: $body ?? ($_POST ?: null)
         );
     }
