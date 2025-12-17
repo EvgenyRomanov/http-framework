@@ -1,4 +1,4 @@
-# 🚀 Minimal HTTP-framework PHP Demo Project
+# 🚀 Minimal HTTP-framework PHP (demo)
 
 ## 📝 Описание
 Минималистичная demo-реализация HTTP-фреймворка на PHP, построенная с соблюдением стандартов и принципов проектирования.
